@@ -18,7 +18,7 @@ Only support Graphviz now.
 '>
 ```
 
-<img alt='g.gongshw.com is dwon! connact @gongshw for help!' src='http://g.gravizo.com/g?
+<img src='http://g.gravizo.com/g?
  digraph G {
    main -> parse -> execute;
    main -> init;
