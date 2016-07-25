@@ -15,10 +15,10 @@ Only support Graphviz now.
    main -> printf;
    execute -> compare;
  }
-'/>
+'>
 ```
 
-<img alter="g.gongshw.com is dwon! connact @gongshw for help!" src='http://g.gongshw.com/g?
+<img alt="g.gongshw.com is dwon! connact @gongshw for help!" src='http://g.gongshw.com/g?
  digraph G {
    main -> parse -> execute;
    main -> init;
@@ -29,4 +29,4 @@ Only support Graphviz now.
    main -> printf;
    execute -> compare;
  }
-'/>
+'>
