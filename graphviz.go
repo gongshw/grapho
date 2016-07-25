@@ -30,7 +30,13 @@ func ExecGraphviz(dotString string, outputType string) []byte {
 	err := dotCmd.Run()
 	if err != nil {
 		errMsg := out.String()
-		return ExecGraphviz("digraph G {T [label=\""+errMsg+"\", shape=box]}", outputType)
+		return ErrorGraph(errMsg, outputType)
 	}
 	return out.Bytes()
+}
+
+func ErrorGraph(errMsg string, outputType string) []byte {
+	errMsg = strings.Replace(errMsg, "\n", "\\n", -1)
+	errMsg = strings.Replace(errMsg, "\"", "\\\"", -1)
+	return ExecGraphviz("digraph G {T [label=\""+errMsg+"\", shape=box]}", outputType)
 }
