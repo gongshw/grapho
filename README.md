@@ -3,7 +3,7 @@ A copycat of gravizo.com by Go
 
 Only support Graphviz now.
 
-```htm
+```html
 <img src='http://g.gongshw.com/g?
  digraph G {
    main -> parse -> execute;
@@ -15,7 +15,7 @@ Only support Graphviz now.
    main -> printf;
    execute -> compare;
  }
-'/>l
+'/>
 ```
 
 <img alter="g.gongshw.com is dwon! connact @gongshw for help!" src='http://g.gongshw.com/g?
