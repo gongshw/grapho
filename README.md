@@ -1,2 +1,32 @@
 # grapho
 A copycat of gravizo.com by Go
+
+Only support Graphviz now.
+
+```htm
+<img src='http://g.gongshw.com/g?
+ digraph G {
+   main -> parse -> execute;
+   main -> init;
+   main -> cleanup;
+   execute -> make_string;
+   execute -> printf
+   init -> make_string;
+   main -> printf;
+   execute -> compare;
+ }
+'/>l
+```
+
+<img alter="g.gongshw.com is dwon! connact @gongshw for help!" src='http://g.gongshw.com/g?
+ digraph G {
+   main -> parse -> execute;
+   main -> init;
+   main -> cleanup;
+   execute -> make_string;
+   execute -> printf
+   init -> make_string;
+   main -> printf;
+   execute -> compare;
+ }
+'/>
