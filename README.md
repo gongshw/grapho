@@ -13,7 +13,6 @@ Only support Graphviz now.
    execute -> printf
    init -> make_string;
    main -> printf;
-   execute -> compare;
  }
 '>
 ```
@@ -27,6 +26,5 @@ Only support Graphviz now.
    execute -> printf
    init -> make_string;
    main -> printf;
-   execute -> compare;
  }
 '>
