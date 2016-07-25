@@ -2,7 +2,6 @@ package main
 
 import (
 	"flag"
-	"fmt"
 	"log"
 	"net/http"
 	"net/url"
@@ -19,13 +18,20 @@ func main() {
 
 func StartWeb() {
 	http.HandleFunc("/test/graphviz", TestGraphviz)
-	http.HandleFunc("/g", GeneratrGraph)
+	http.HandleFunc("/g", GeneratrPng)
+	http.HandleFunc("/svg", GeneratrSvg)
 	log.Fatal(http.ListenAndServe("0.0.0.0:"+strconv.Itoa(*port), nil))
 }
 
-func GeneratrGraph(w http.ResponseWriter, r *http.Request) {
+func GeneratrPng(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "image/png")
+	w.Write(ExecGraphviz(GetGraphString(r), "png"))
+
+}
+
+func GeneratrSvg(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "image/svg+xml; charset=utf-8")
-	fmt.Fprintf(w, ExecGraphviz(GetGraphString(r)))
+	w.Write(ExecGraphviz(GetGraphString(r), "svg"))
 }
 
 func GetGraphString(r *http.Request) string {
