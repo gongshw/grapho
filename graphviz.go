@@ -3,7 +3,6 @@ package main
 import (
 	"bytes"
 	"log"
-	"net/http"
 	"os/exec"
 	"strings"
 )
@@ -20,10 +19,6 @@ func CheckGraphvizVersion() string {
 	}
 	log.Printf("CheckGraphvizVersion: %s\n", output)
 	return ""
-}
-func TestGraphviz(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "image/svg+xml; charset=utf-8")
-	w.Write(ExecGraphviz("digraph G {T [label=\"Graphviz Works\"]}", "svg"))
 }
 
 func ExecGraphviz(dotString string, outputType string) []byte {

@@ -39,3 +39,8 @@ func GetGraphString(r *http.Request) string {
 	log.Printf("GetGraphString: %s\n", str)
 	return str
 }
+
+func TestGraphviz(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "image/svg+xml; charset=utf-8")
+	w.Write(ExecGraphviz("digraph G {T [label=\"Graphviz Works\"]}", "svg"))
+}
