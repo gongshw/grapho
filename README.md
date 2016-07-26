@@ -27,4 +27,4 @@ Only support Graphviz now.
    init -> make_string;
    main -> printf;
  }
-'>
+'/>
