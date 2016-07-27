@@ -4,6 +4,7 @@ import (
 	"log"
 	"os"
 	"os/exec"
+	"strings"
 )
 
 type PlantUmlGenerator struct {
@@ -46,7 +47,8 @@ func (g *PlantUmlGenerator) CheckEnv() bool {
 }
 
 func (g *PlantUmlGenerator) GenerateFromString(str string, outputType string) []byte {
-	output, err := Exec(g.javaCmd, str, "-jar", g.plantUmlJar, "-p", "-t"+outputType)
+	str = strings.Replace(str, ";", "\n", -1)
+	output, err := Exec(g.javaCmd, str, "-jar", g.plantUmlJar, "-p", "-t"+outputType, "-charset", "UTF-8")
 	if err != nil {
 		ShowError(err.Error(), outputType)
 	}
@@ -54,6 +56,7 @@ func (g *PlantUmlGenerator) GenerateFromString(str string, outputType string) []
 }
 
 func (g *PlantUmlGenerator) IsCompatible(str string) bool {
+	str = strings.Replace(str, ";", "\n", -1)
 	_, err := Exec(g.javaCmd, str, "-jar", g.plantUmlJar, "-p", "-tpng")
 	return err == nil
 }
