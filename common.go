@@ -3,9 +3,12 @@ package main
 import (
 	"bytes"
 	"errors"
+	lru "github.com/hashicorp/golang-lru"
 	"os/exec"
 	"strings"
 )
+
+var Cache, _ = lru.New(128)
 
 type GraphGenerator interface {
 	String() string

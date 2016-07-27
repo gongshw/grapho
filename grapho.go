@@ -57,25 +57,38 @@ func GetCompatibleGenerator(str string) GraphGenerator {
 	return nil
 }
 
-func GenerateGraph(w http.ResponseWriter, r *http.Request, outputType string) {
+func GenerateGraphWithCache(w http.ResponseWriter, r *http.Request, outputType string) {
 	mineType := formatMineTypeMap[outputType]
 	w.Header().Set("Content-Type", mineType)
-	str := GetGraphString(r)
+
+	outputFromCache, exist := Cache.Get(r.RequestURI)
+	var output []byte
+	if exist {
+		output, _ = outputFromCache.([]byte)
+	} else {
+		str := GetGraphString(r)
+		output = GenerateGraph(str, outputType)
+		Cache.Add(r.RequestURI, output)
+	}
+	w.Write(output)
+}
+
+func GenerateGraph(str string, outputType string) []byte {
 	generator := GetCompatibleGenerator(str)
 	if generator != nil {
-		w.Write(generator.GenerateFromString(str, outputType))
+		return generator.GenerateFromString(str, outputType)
 	} else {
-		w.Write(ShowError("Error: Can't Parse Input Content!", outputType))
+		return ShowError("Error: Can't Parse Input Content!", outputType)
 	}
 }
 
 func GeneratrPng(w http.ResponseWriter, r *http.Request) {
-	GenerateGraph(w, r, "png")
+	GenerateGraphWithCache(w, r, "png")
 
 }
 
 func GeneratrSvg(w http.ResponseWriter, r *http.Request) {
-	GenerateGraph(w, r, "svg")
+	GenerateGraphWithCache(w, r, "svg")
 }
 
 func GetGraphString(r *http.Request) string {
