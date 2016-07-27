@@ -1,7 +1,7 @@
 # grapho
 A copycat of gravizo.com by Go
 
-Only support Graphviz now.
+Only support *Graphviz* and *Plant UML* now.
 
 ```html
 <img src='http://g.gongshw.com/g?
