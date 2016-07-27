@@ -11,7 +11,8 @@ import (
 var port = flag.Int("port", 8080, "set the server listening port")
 
 var supportGenerators = [...]GraphGenerator{
-	GraphvizGenerator{},
+	&GraphvizGenerator{},
+	&PlantUmlGenerator{},
 }
 
 var formatMineTypeMap = map[string]string{
@@ -29,6 +30,7 @@ func main() {
 
 func StartWeb() {
 	http.HandleFunc("/test/graphviz", TestGraphviz)
+	http.HandleFunc("/test/plantuml", TestPlantUml)
 	http.HandleFunc("/g", GeneratrPng)
 	http.HandleFunc("/svg", GeneratrSvg)
 	log.Fatal(http.ListenAndServe("0.0.0.0:"+strconv.Itoa(*port), nil))
@@ -43,6 +45,7 @@ func CheckGenerators() {
 	if len(installedGenerators) == 0 {
 		log.Fatal("No Installed Graph Generator found!")
 	}
+	log.Printf("Enabled graph generators: %s\n", installedGenerators)
 }
 
 func GetCompatibleGenerator(str string) GraphGenerator {
@@ -59,7 +62,11 @@ func GenerateGraph(w http.ResponseWriter, r *http.Request, outputType string) {
 	w.Header().Set("Content-Type", mineType)
 	str := GetGraphString(r)
 	generator := GetCompatibleGenerator(str)
-	w.Write(generator.GenerateFromString(str, outputType))
+	if generator != nil {
+		w.Write(generator.GenerateFromString(str, outputType))
+	} else {
+		w.Write(ShowError("Error: Can't Parse Input Content!", outputType))
+	}
 }
 
 func GeneratrPng(w http.ResponseWriter, r *http.Request) {
@@ -80,6 +87,13 @@ func GetGraphString(r *http.Request) string {
 func TestGraphviz(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "image/svg+xml; charset=utf-8")
 	str := "digraph G {T [label=\"Graphviz Works\"]}"
+	generator := GetCompatibleGenerator(str)
+	w.Write(generator.GenerateFromString(str, "svg"))
+}
+
+func TestPlantUml(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "image/svg+xml; charset=utf-8")
+	str := "digraph G {T [label=\"PlantUML Works\"]}"
 	generator := GetCompatibleGenerator(str)
 	w.Write(generator.GenerateFromString(str, "svg"))
 }
