@@ -91,4 +91,4 @@ N2 .. (Use);
 '>
 ```
 
-<img src='http://g.gongshw.com/g?%20@startuml;%20class%20Object%20%3C%3C%20general%20%3E%3E;%20Object%20%3C|---%20ArrayList;%20note%20top%20of%20Object%20:%20In%20java,%20every%20class\nextends%20this%20one.;%20note%20%22This%20is%20a%20floating%20note%22%20as%20N1;%20note%20%22This%20note%20is%20connected\nto%20several%20objects.%22%20as%20N2;%20Object%20..%20N2;%20N2%20..%20ArrayList;%20class%20Foo;%20note%20left:%20On%20last%20defined%20class;%20@enduml;'>
+<img src='http://g.gongshw.com/g?%20@startuml;%20:Main%20Admin:%20as%20Admin;%20(Use%20the%20application)%20as%20(Use);%20User%20-%3E%20(Start);%20User%20--%3E%20(Use);%20Admin%20---%3E%20(Use);%20note%20right%20of%20Admin%20:%20This%20is%20an%20example.;%20note%20right%20of%20(Use);%20A%20note%20can%20also;%20be%20on%20several%20lines;%20end%20note;%20note%20%22This%20note%20is%20connected\nto%20several%20objects.%22%20as%20N2;%20(Start)%20..%20N2;%20N2%20..%20(Use);%20@enduml'>
