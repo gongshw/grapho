@@ -1,42 +1,41 @@
 package main
 
 import (
-	"bytes"
-	"fmt"
 	"log"
-	"net/http"
 	"os/exec"
-	"strings"
 )
 
-func CheckGraphvizVersion() string {
-	path, err := exec.LookPath("dot")
-	if err != nil {
-		log.Fatal("CheckGraphvizVersion: graphviz not found")
-	}
-	log.Printf("CheckGraphvizVersion: graphviz is available at %s\n", path)
-	output, err := exec.Command("dot", "-V").CombinedOutput()
-	if err != nil {
-		log.Fatal(err)
-	}
-	log.Printf("CheckGraphvizVersion: %s\n", output)
-	return ""
-}
-func TestGraphviz(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "image/svg+xml; charset=utf-8")
-	fmt.Fprintf(w, ExecGraphviz("digraph G {T [label=\"Graphviz Works\"]}"))
+type GraphvizGenerator struct {
 }
 
-func ExecGraphviz(dotString string) string {
-	dotCmd := exec.Command("dot", "-T", "svg")
-	dotCmd.Stdin = strings.NewReader(dotString)
-	var out bytes.Buffer
-	dotCmd.Stdout = &out
-	dotCmd.Stderr = &out
-	err := dotCmd.Run()
+func (GraphvizGenerator) CheckEnv() bool {
+	path, err := exec.LookPath("dot")
 	if err != nil {
-		errMsg := out.String()
-		return ExecGraphviz("digraph G {T [label=\"" + errMsg + "\", shape=box]}")
+		log.Fatal("CheckEnv: graphviz not found")
 	}
-	return out.String()
+	log.Printf("CheckEnv: graphviz is available at %s\n", path)
+	output, err := Exec("dot", "", "-V")
+	if err != nil {
+		log.Printf(err.Error())
+		return false
+	}
+	log.Printf("CheckEnv: %s", output)
+	return true
+}
+
+func (GraphvizGenerator) GenerateFromString(str string, outputType string) []byte {
+	output, err := ExecGraphviz(str, outputType)
+	if err != nil {
+		return ShowError(err.Error(), outputType)
+	}
+	return output
+}
+
+func (GraphvizGenerator) IsCompatible(str string) bool {
+	_, error := ExecGraphviz(str, "png")
+	return error == nil
+}
+
+func (GraphvizGenerator) String() string {
+	return "GraphvizGenerator"
 }
