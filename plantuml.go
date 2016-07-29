@@ -23,7 +23,7 @@ func (g *PlantUmlGenerator) CheckEnv() bool {
 		g.javaCmd = path
 	} else {
 		log.Printf("CheckEnv: Found $JAVA_HOME: %s\n", javaHome)
-		g.javaCmd = javaHome + "bin/java"
+		g.javaCmd = javaHome + "/bin/java"
 	}
 	output, err := Exec(g.javaCmd, "", "-version")
 	log.Printf("Java Version:\n%s", output)
@@ -46,19 +46,9 @@ func (g *PlantUmlGenerator) CheckEnv() bool {
 	return err == nil
 }
 
-func (g *PlantUmlGenerator) GenerateFromString(str string, outputType string) []byte {
+func (g *PlantUmlGenerator) TryGenerateFromString(str string, outputType string) ([]byte, error) {
 	str = strings.Replace(str, ";", "\n", -1)
-	output, err := Exec(g.javaCmd, str, "-jar", g.plantUmlJar, "-p", "-t"+outputType, "-charset", "UTF-8")
-	if err != nil {
-		ShowError(err.Error(), outputType)
-	}
-	return output
-}
-
-func (g *PlantUmlGenerator) IsCompatible(str string) bool {
-	str = strings.Replace(str, ";", "\n", -1)
-	_, err := Exec(g.javaCmd, str, "-jar", g.plantUmlJar, "-p", "-tpng")
-	return err == nil
+	return Exec(g.javaCmd, str, "-jar", g.plantUmlJar, "-p", "-t"+outputType, "-charset", "UTF-8")
 }
 
 func (*PlantUmlGenerator) String() string {

@@ -29,8 +29,6 @@ func main() {
 }
 
 func StartWeb() {
-	http.HandleFunc("/test/graphviz", TestGraphviz)
-	http.HandleFunc("/test/plantuml", TestPlantUml)
 	http.HandleFunc("/g", GeneratrPng)
 	http.HandleFunc("/svg", GeneratrSvg)
 	log.Fatal(http.ListenAndServe("0.0.0.0:"+strconv.Itoa(*port), nil))
@@ -46,15 +44,6 @@ func CheckGenerators() {
 		log.Fatal("No Installed Graph Generator found!")
 	}
 	log.Printf("Enabled graph generators: %s\n", installedGenerators)
-}
-
-func GetCompatibleGenerator(str string) GraphGenerator {
-	for _, generator := range installedGenerators {
-		if generator.IsCompatible(str) {
-			return generator
-		}
-	}
-	return nil
 }
 
 func GenerateGraphWithCache(w http.ResponseWriter, r *http.Request, outputType string) {
@@ -74,12 +63,13 @@ func GenerateGraphWithCache(w http.ResponseWriter, r *http.Request, outputType s
 }
 
 func GenerateGraph(str string, outputType string) []byte {
-	generator := GetCompatibleGenerator(str)
-	if generator != nil {
-		return generator.GenerateFromString(str, outputType)
-	} else {
-		return ShowError("Error: Can't Parse Input Content!", outputType)
+	for _, g := range installedGenerators {
+		output, err := g.TryGenerateFromString(str, outputType)
+		if err == nil {
+			return output
+		}
 	}
+	return ShowError("Error: Can't Parse Input Content!", outputType)
 }
 
 func GeneratrPng(w http.ResponseWriter, r *http.Request) {
@@ -95,18 +85,4 @@ func GetGraphString(r *http.Request) string {
 	str, _ := url.QueryUnescape(r.URL.RawQuery)
 	log.Printf("GetGraphString: %s\n", str)
 	return str
-}
-
-func TestGraphviz(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "image/svg+xml; charset=utf-8")
-	str := "digraph G {T [label=\"Graphviz Works\"]}"
-	generator := GetCompatibleGenerator(str)
-	w.Write(generator.GenerateFromString(str, "svg"))
-}
-
-func TestPlantUml(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "image/svg+xml; charset=utf-8")
-	str := "digraph G {T [label=\"PlantUML Works\"]}"
-	generator := GetCompatibleGenerator(str)
-	w.Write(generator.GenerateFromString(str, "svg"))
 }

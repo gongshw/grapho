@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"errors"
 	lru "github.com/hashicorp/golang-lru"
+	"log"
 	"os/exec"
 	"strings"
 )
@@ -13,8 +14,7 @@ var Cache, _ = lru.New(128)
 type GraphGenerator interface {
 	String() string
 	CheckEnv() bool
-	GenerateFromString(str string, outputType string) []byte
-	IsCompatible(str string) bool
+	TryGenerateFromString(str string, outputType string) ([]byte, error)
 }
 
 func ExecGraphviz(dotString string, outputType string) ([]byte, error) {
@@ -23,6 +23,7 @@ func ExecGraphviz(dotString string, outputType string) ([]byte, error) {
 
 func Exec(cmd string, inputStr string, args ...string) ([]byte, error) {
 	dotCmd := exec.Command(cmd, args...)
+	log.Printf("exec: %s %s", cmd, args)
 	if inputStr != "" {
 		dotCmd.Stdin = strings.NewReader(inputStr)
 	}

@@ -1,8 +1,10 @@
 package main
 
 import (
+	"errors"
 	"log"
 	"os/exec"
+	"strings"
 )
 
 type GraphvizGenerator struct {
@@ -23,17 +25,11 @@ func (GraphvizGenerator) CheckEnv() bool {
 	return true
 }
 
-func (GraphvizGenerator) GenerateFromString(str string, outputType string) []byte {
-	output, err := ExecGraphviz(str, outputType)
-	if err != nil {
-		return ShowError(err.Error(), outputType)
+func (GraphvizGenerator) TryGenerateFromString(str string, outputType string) ([]byte, error) {
+	if strings.HasPrefix(strings.TrimSpace(str), "@") {
+		return nil, errors.New("Not Supoport")
 	}
-	return output
-}
-
-func (GraphvizGenerator) IsCompatible(str string) bool {
-	_, error := ExecGraphviz(str, "png")
-	return error == nil
+	return ExecGraphviz(str, outputType)
 }
 
 func (GraphvizGenerator) String() string {
