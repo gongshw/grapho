@@ -1,4 +1,7 @@
 # grapho
+
+[![Build Status](https://travis-ci.org/gongshw/grapho.svg?branch=master)](https://travis-ci.org/gongshw/grapho)
+
 A copycat of gravizo.com by Go
 
 Only support *Graphviz* and *Plant UML* now.

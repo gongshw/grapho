@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	lru "github.com/hashicorp/golang-lru"
 	"log"
 	"net/http"
 	"net/url"
@@ -9,11 +10,14 @@ import (
 )
 
 var port = flag.Int("port", 8080, "set the server listening port")
+var cacheSize = flag.Int("cache", 128, "set the cache size")
 
 var supportGenerators = [...]GraphGenerator{
 	&GraphvizGenerator{},
 	&PlantUmlGenerator{},
 }
+
+var Cache *lru.Cache
 
 var formatMineTypeMap = map[string]string{
 	"svg": "image/svg+xml; charset=utf-8",
@@ -24,8 +28,15 @@ var installedGenerators []GraphGenerator
 
 func main() {
 	flag.Parse()
+	InitCache()
 	CheckGenerators()
 	StartWeb()
+}
+
+func InitCache() {
+	if *cacheSize > 0 {
+		Cache, _ = lru.New(*cacheSize)
+	}
 }
 
 func StartWeb() {
@@ -50,6 +61,11 @@ func GenerateGraphWithCache(w http.ResponseWriter, r *http.Request, outputType s
 	mineType := formatMineTypeMap[outputType]
 	w.Header().Set("Content-Type", mineType)
 
+	if Cache == nil {
+		GenerateGraphWithOutCache(w, r, outputType)
+		return
+	}
+
 	outputFromCache, exist := Cache.Get(r.RequestURI)
 	var output []byte
 	if exist {
@@ -59,6 +75,13 @@ func GenerateGraphWithCache(w http.ResponseWriter, r *http.Request, outputType s
 		output = GenerateGraph(str, outputType)
 		Cache.Add(r.RequestURI, output)
 	}
+	w.Write(output)
+}
+
+func GenerateGraphWithOutCache(w http.ResponseWriter, r *http.Request, outputType string) {
+	var output []byte
+	str := GetGraphString(r)
+	output = GenerateGraph(str, outputType)
 	w.Write(output)
 }
 
@@ -74,7 +97,6 @@ func GenerateGraph(str string, outputType string) []byte {
 
 func GeneratrPng(w http.ResponseWriter, r *http.Request) {
 	GenerateGraphWithCache(w, r, "png")
-
 }
 
 func GeneratrSvg(w http.ResponseWriter, r *http.Request) {
