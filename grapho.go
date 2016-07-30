@@ -87,6 +87,7 @@ func GenerateGraphWithOutCache(w http.ResponseWriter, r *http.Request, outputTyp
 
 func GenerateGraph(str string, outputType string) []byte {
 	for _, g := range installedGenerators {
+		log.Printf("Try %s", g)
 		output, err := g.TryGenerateFromString(str, outputType)
 		if err == nil {
 			return output
